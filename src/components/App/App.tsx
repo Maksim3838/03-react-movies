@@ -1,39 +1,15 @@
+// import axios from 'axios';
 
+// const options = {
+//   method: 'GET',
+//   url: 'https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1',
+//   headers: {
+//     accept: 'application/json',
+//     Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNGE5OWM0NWYxYjJmMzllZDdiNTU2NTk0MTYxYmNkZCIsIm5iZiI6MTc2MjU0MTE4OC4wNDgsInN1YiI6IjY5MGUzZTg0ZjEyNWI4OGI1NjMxYTU0ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.kt7Rde5wrBqmbVtQv8dGqHh1s3_FT7kynaHwf0JSrT4
+//   }
+// };
 
-
-
-export default function App() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>)=>{
-   event.preventDefault ();
-const form = event.currentTarget;
-const formData = new FormData(form);
-
-
-const username = formData.get(`username`);
-const password = formData.get(`password`);
-
-console.log({username, password});
-
-form.reset();
-
-
-
-
-
-  }
-  return (
-    <>
-      <h1>Form</h1>
-
-<form onSubmit={handleSubmit}>
-<div><input type="text" name="username"/></div>
-<div><input type="password" name="password"/></div>
-
-<button type="submit">submit</button>
-
-</form>
-
-
-    </>
-  );
-}
+// axios
+//   .request(options)
+//   .then(res => console.log(res.data))
+//   .catch(err => console.error(err));
