@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
@@ -10,16 +11,23 @@ import MovieModal from "../MovieModal/MovieModal";
 
 import type { Movie } from "../../types/movie";
 
-
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  // Пошук фільмів
-  async function handleSearch(query: string) {
-    if (!query.trim()) return;
+  const token = import.meta.env.VITE_TMDB_TOKEN;
+
+  if (!token) {
+    throw new Error("VITE_TMDB_TOKEN is not defined in .env file");
+  }
+
+    async function handleSearch(query: string) {
+    if (!query.trim()) {
+      toast.error("Please enter your search query.");
+      return;
+    }
 
     setMovies([]);
     setIsError(false);
@@ -31,7 +39,7 @@ export default function App() {
         {
           params: { query, include_adult: false },
           headers: {
-            Authorization: `Bearer YOUR_TOKEN_HERE`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -50,13 +58,11 @@ export default function App() {
     }
   }
 
-  // Вибір фільму
-  function handleMovieSelect(movie: Movie) {
+   function handleMovieSelect(movie: Movie) {
     setSelectedMovie(movie);
   }
 
-  // Закриття модалки
-  function closeModal() {
+    function closeModal() {
     setSelectedMovie(null);
   }
 
@@ -66,13 +72,10 @@ export default function App() {
       <Toaster position="top-right" />
 
       {loading && <Loader />}
-
       {!loading && isError && <ErrorMessage />}
-
       {!loading && !isError && movies.length > 0 && (
         <MovieGrid movies={movies} onSelect={handleMovieSelect} />
       )}
-
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={closeModal} />
       )}
