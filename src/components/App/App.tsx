@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
 import SearchBar from "../SearchBar/SearchBar";
@@ -10,6 +9,7 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 
 import type { Movie } from "../../types/movie";
+import { fetchMovies } from "../../services/movieService";
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -17,13 +17,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const token = import.meta.env.VITE_TMDB_TOKEN;
-
-  if (!token) {
-    throw new Error("VITE_TMDB_TOKEN is not defined in .env file");
-  }
-
-    async function handleSearch(query: string) {
+  async function handleSearch(query: string) {
     if (!query.trim()) {
       toast.error("Please enter your search query.");
       return;
@@ -34,21 +28,13 @@ export default function App() {
     setLoading(true);
 
     try {
-      const response = await axios.get<{ results: Movie[] }>(
-        "https://api.themoviedb.org/3/search/movie",
-        {
-          params: { query, include_adult: false },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const results = await fetchMovies(query);
 
-      if (response.data.results.length === 0) {
+      if (results.length === 0) {
         toast.error("No movies found for your request.");
       }
 
-      setMovies(response.data.results);
+      setMovies(results);
     } catch (error) {
       setIsError(true);
       toast.error("Error fetching movies.");
@@ -58,11 +44,11 @@ export default function App() {
     }
   }
 
-   function handleMovieSelect(movie: Movie) {
+  function handleMovieSelect(movie: Movie) {
     setSelectedMovie(movie);
   }
 
-    function closeModal() {
+  function closeModal() {
     setSelectedMovie(null);
   }
 
