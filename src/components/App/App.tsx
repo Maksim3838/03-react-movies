@@ -1,70 +1,31 @@
+import toast from "react-hot-toast";
 
-import { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+interface SearchBarProps {
+  onSubmit: (query: string) => void;
+}
 
-import SearchBar from "../SearchBar/SearchBar";
-import MovieGrid from "../MovieGrid/MovieGrid";
-import Loader from "../Loader/Loader";
-import ErrorMessage from "../ErrorMessage/ErrorMessage";
-import MovieModal from "../MovieModal/MovieModal";
+export default function SearchBar({ onSubmit }: SearchBarProps) {
+  async function handleSearch(formData: FormData) {
+    const query = (formData.get("query") as string).trim();
 
-import type { Movie } from "../../types/movie";
-import { fetchMovies } from "../../services/movieService";
-
-export default function App() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-
-  async function handleSearch(query: string) {
-    if (!query.trim()) {
+    if (!query) {
       toast.error("Please enter your search query.");
       return;
     }
 
-    setMovies([]);
-    setIsError(false);
-    setLoading(true);
-
-    try {
-      const results = await fetchMovies(query);
-
-      if (results.length === 0) {
-        toast.error("No movies found for your request.");
-      }
-
-      setMovies(results);
-    } catch (error) {
-      setIsError(true);
-      toast.error("Error fetching movies.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleMovieSelect(movie: Movie) {
-    setSelectedMovie(movie);
-  }
-
-  function closeModal() {
-    setSelectedMovie(null);
+    onSubmit(query);
   }
 
   return (
-    <>
-      <SearchBar onSubmit={handleSearch} />
-      <Toaster position="top-right" />
-
-      {loading && <Loader />}
-      {!loading && isError && <ErrorMessage />}
-      {!loading && !isError && movies.length > 0 && (
-        <MovieGrid movies={movies} onSelect={handleMovieSelect} />
-      )}
-      {selectedMovie && (
-        <MovieModal movie={selectedMovie} onClose={closeModal} />
-      )}
-    </>
+    <header>
+      <form action={handleSearch}>
+        <input
+          type="text"
+          name="query"
+          placeholder="Enter a movie name..."
+        />
+        <button type="submit">Search</button>
+      </form>
+    </header>
   );
 }
