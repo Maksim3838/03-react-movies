@@ -1,31 +1,28 @@
-import toast from "react-hot-toast";
+import { useState } from "react";
+import SearchBar from "../SearchBar/SearchBar";
 
-interface SearchBarProps {
-  onSubmit: (query: string) => void;
-}
+export default function App() {
+  const [movies, setMovies] = useState<string[]>([]); 
 
-export default function SearchBar({ onSubmit }: SearchBarProps) {
-  async function handleSearch(formData: FormData) {
-    const query = (formData.get("query") as string).trim();
+  
+  function handleSearch(query: string) {
+    console.log("Search query:", query);
 
-    if (!query) {
-      toast.error("Please enter your search query.");
-      return;
-    }
+        setMovies((prev) => [...prev, query]);
 
-    onSubmit(query);
-  }
+      }
 
   return (
-    <header>
-      <form action={handleSearch}>
-        <input
-          type="text"
-          name="query"
-          placeholder="Enter a movie name..."
-        />
-        <button type="submit">Search</button>
-      </form>
-    </header>
+    <div>
+      <h1>Movie Search</h1>
+      <SearchBar onSubmit={handleSearch} />
+
+      <h2>Previous searches:</h2>
+      <ul>
+        {movies.map((movie, index) => (
+          <li key={index}>{movie}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
