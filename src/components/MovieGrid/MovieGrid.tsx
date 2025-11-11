@@ -1,4 +1,4 @@
-import type { Movie } from "../../types/types";
+import type { Movie } from "../../types/movie";
 import css from "./MovieGrid.module.css";
 
 interface MovieGridProps {
