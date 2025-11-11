@@ -12,3 +12,11 @@ export const axiosInstance = axios.create({
     Authorization: `Bearer ${token}`,
   },
 });
+
+export async function fetchMovies(query: string) {
+  const response = await axiosInstance.get("/search/movie", {
+    params: { query },
+  });
+
+  return response.data.results; 
+}

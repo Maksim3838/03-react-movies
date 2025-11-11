@@ -1,30 +1,44 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
+import { fetchMovies } from "../../services/api";  // <-- імпорт функції запиту
+
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string | null;
+}
 
 export default function App() {
-  const [movies, setMovies] = useState<string[]>([]); 
+  const [movies, setMovies] = useState<Movie[]>([]);
 
-  
-  function handleSearch(query: string) {
-    console.log("Search query:", query);
+  async function handleSearch(query: string) {
+    try {
+      const fetchedMovies = await fetchMovies(query);
 
-        setMovies((prev) => [...prev, query]);
-
+      if (fetchedMovies.length === 0) {
+        toast.error(`No movies found for "${query}".`);
+        return;
       }
+
+      setMovies(fetchedMovies); // <-- зберігаємо об'єкти, не рядки
+    } catch (error) {
+      toast.error("Something went wrong...");
+      console.error(error);
+    }
+  }
 
   return (
     <div>
       <h1>Movie Search</h1>
       <SearchBar onSubmit={handleSearch} />
 
-      <h2>Previous searches:</h2>
+      <h2>Results:</h2>
       <ul>
-        {movies.map((movie, index) => (
-          <li key={index}>{movie}</li>
+        {movies.map((movie) => (
+          <li key={movie.id}>{movie.title}</li>
         ))}
       </ul>
     </div>
   );
 }
-
-
