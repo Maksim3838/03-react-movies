@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
-import { fetchMovies } from "../../services/api";  // <-- імпорт функції запиту
+import { fetchMovies } from "../../services/api";  
 
 interface Movie {
   id: number;
@@ -21,7 +21,7 @@ export default function App() {
         return;
       }
 
-      setMovies(fetchedMovies); // <-- зберігаємо об'єкти, не рядки
+      setMovies(fetchedMovies); 
     } catch (error) {
       toast.error("Something went wrong...");
       console.error(error);
