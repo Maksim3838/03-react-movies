@@ -1,4 +1,4 @@
-import type { Movie } from "../types/movie";
+import type { Movie } from "../types/types";
 import { axiosInstance } from "./api";
 
 export async function fetchMovies(query: string): Promise<Movie[]> {

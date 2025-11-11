@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { Movie } from "../types/types";
 
 const token = import.meta.env.VITE_TMDB_TOKEN;
 
@@ -13,10 +14,10 @@ export const axiosInstance = axios.create({
   },
 });
 
-export async function fetchMovies(query: string) {
+export async function fetchMovies(query: string): Promise<Movie[]> {
   const response = await axiosInstance.get("/search/movie", {
     params: { query },
   });
 
-  return response.data.results; 
+  return response.data.results as Movie[];
 }
