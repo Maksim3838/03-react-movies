@@ -1,44 +1,69 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
-import SearchBar from "../SearchBar/SearchBar";
-import { fetchMovies } from "../../services/api";  
+import toast, { Toaster } from "react-hot-toast";
 
-interface Movie {
-  id: number;
-  title: string;
-  poster_path: string | null;
-}
+import SearchBar from "../SearchBar/SearchBar";
+import MovieGrid from "../MovieGrid/MovieGrid";
+import MovieModal from "../MovieModal/MovieModal";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import Loader from "../Loader/Loader";
+
+import { fetchMovies } from "../../services/api";
+import type { Movie } from "../../types/movie"; 
 
 export default function App() {
+  
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState<string | null>(null); 
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null); 
 
-  async function handleSearch(query: string) {
+    async function handleSearch(query: string) {
+    setLoading(true);
+    setError(null);      
+    setMovies([]);       
+
     try {
-      const fetchedMovies = await fetchMovies(query);
+      const results = await fetchMovies(query);
 
-      if (fetchedMovies.length === 0) {
+      if (results.length === 0) {
         toast.error(`No movies found for "${query}".`);
         return;
       }
 
-      setMovies(fetchedMovies); 
-    } catch (error) {
-      toast.error("Something went wrong...");
-      console.error(error);
+      setMovies(results);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load movies. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
-  return (
+   function handleSelectMovie(movie: Movie) {
+    setSelectedMovie(movie);
+  }
+
+    function handleCloseModal() {
+    setSelectedMovie(null);
+  }
+
+   return (
     <div>
       <h1>Movie Search</h1>
       <SearchBar onSubmit={handleSearch} />
+      <Toaster position="top-right" />
 
-      <h2>Results:</h2>
-      <ul>
-        {movies.map((movie) => (
-          <li key={movie.id}>{movie.title}</li>
-        ))}
-      </ul>
+            {loading && <Loader />}
+
+            {error && <ErrorMessage message={error} />}
+
+            {!loading && !error && movies.length > 0 && (
+        <MovieGrid movies={movies} onSelect={handleSelectMovie} />
+      )}
+
+           {selectedMovie && (
+        <MovieModal movie={selectedMovie} onClose={handleCloseModal} />
+      )}
     </div>
   );
 }
